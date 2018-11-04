@@ -11,15 +11,15 @@ Using NuGet packages might be a way, how to manage the updates, but there is som
 I have a directory with templates, where template is actually a VS solution that can live on its own, be versioned in GIT, etc. to design the template and the functionality it provides.
 The sample template here is used to manage the build process of my projects. It provides two projects - `build` with MSBuild definitions (tasks, targets, props) and `build.tasks` with implementation of custom build tasks. It also provides some common solution files (for license file) or the files to be added to the solution, but not to be updated later on from template (for example readme file).
 
-![Template Files](doc/img/templatefiles.png)
+![Template Files](doc/img/TemplateFiles.png)
 
 Template is applied to the target solution using the `Apply template` command available at `RAD Solution` submenu extending the VS context menu of the solution root.
 
-![Template Files](doc/img/extensionmenu.png)
+![Extension Menu](doc/img/ExtensionMenu.png)
 
 The extension looks for templates in the directory containing the templates defined is extension options that are a part of VS settings dialog.
 
-![Template Files](doc/img/extensionoptions.png)
+![Extension Options](doc/img/ExtensionOptions.png)
 
 The template directory setting can contain some variables that are replaces by proper values when executed
 - `%Projects%` - VS default projects directory
@@ -30,7 +30,7 @@ The default value is `%Projects%\Template`.
 
 In case there is just one template available, it's applied to the target solution. Otherwise it's necessary to choose a template from the list
 
-![Template Files](doc/img/templatechoose.png)
+![Template Choose](doc/img/TemplateChoose.png)
 
 *Note: when re-applying the template, the last template applied is used automatically*
 
