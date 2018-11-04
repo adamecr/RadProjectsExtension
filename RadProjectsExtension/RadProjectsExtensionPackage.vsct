@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
+  <Extern href="stdidcmd.h"/>
+  <!--This header contains the command ids for the menus provided by the shell. -->
+  <Extern href="vsshlids.h"/>
+
+  <Commands package="guidRadProjectsExtensionPackage">
+    <Menus>
+      <Menu guid="guidRadProjectsExtensionPackageCmdSet" id="SolutionCtxRadMenu" priority="0x0000" type="Menu">
+        <Parent guid="guidRadProjectsExtensionPackageCmdSet" id="SolutionCtxMenuRadGroup"/>
+        <Strings>
+          <ButtonText>RAD Solution</ButtonText>
+          <CommandName>RAD Solution</CommandName>
+        </Strings>
+      </Menu>
+    </Menus>
+  
+    <Groups>
+      <!-- adds the RAD Solution menu into the solution explorer's solution node context menu (at the top of it)-->
+      <Group guid="guidRadProjectsExtensionPackageCmdSet" id="SolutionCtxMenuRadGroup" priority="0x0000">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_SOLNNODE"/>
+      </Group>
+      <!-- content of RAD Solution menu -->
+      <Group guid="guidRadProjectsExtensionPackageCmdSet" id="RadMenuGroup" priority="0x0000">
+        <Parent guid="guidRadProjectsExtensionPackageCmdSet" id="SolutionCtxRadMenu"/>
+      </Group>
+    </Groups>
+
+    <Buttons>
+      <Button guid="guidRadProjectsExtensionPackageCmdSet" id="RadCmdApplyTemplate" priority="0x0000" type="Button">
+        <Parent guid="guidRadProjectsExtensionPackageCmdSet" id="RadMenuGroup" />
+        <Strings>
+          <ButtonText>Apply template</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+
+  </Commands>
+
+  <Symbols>
+    <!-- This is the package guid. -->
+    <GuidSymbol name="guidRadProjectsExtensionPackage" value="{256f6e6f-50dc-4375-b9d7-d0803e2c219c}" />
+
+    <GuidSymbol name="guidRadProjectsExtensionPackageCmdSet" value="{3994f851-c0ed-4950-8bc5-46fd1a52c1eb}">
+      <IDSymbol name="SolutionCtxMenuRadGroup" value="0x1020" />
+      <IDSymbol name="SolutionCtxRadMenu" value="0x1021"/>
+      <IDSymbol name="RadMenuGroup" value="0x1022" />
+      <IDSymbol name="RadCmdApplyTemplate" value="0x0100" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>
