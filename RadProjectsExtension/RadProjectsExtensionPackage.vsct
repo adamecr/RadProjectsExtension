@@ -34,6 +34,12 @@
           <ButtonText>Apply template</ButtonText>
         </Strings>
       </Button>
+      <Button guid="guidRadProjectsExtensionPackageCmdSet" id="RadCmdSolutionConsole" priority="0x0002" type="Button">
+        <Parent guid="guidRadProjectsExtensionPackageCmdSet" id="RadMenuGroup" />
+        <Strings>
+          <ButtonText>Solution console</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
   </Commands>
@@ -47,6 +53,7 @@
       <IDSymbol name="SolutionCtxRadMenu" value="0x1021"/>
       <IDSymbol name="RadMenuGroup" value="0x1022" />
       <IDSymbol name="RadCmdApplyTemplate" value="0x0100" />
+      <IDSymbol name="RadCmdSolutionConsole" value="0x0101" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>

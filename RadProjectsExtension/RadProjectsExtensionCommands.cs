@@ -1,8 +1,11 @@
 ﻿using System;
 using System.ComponentModel.Design;
+using System.IO;
+using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using net.adamec.dev.vs.extension.radprojects.template;
+using net.adamec.dev.vs.extension.radprojects.ui.console;
 using net.adamec.dev.vs.extension.radprojects.utils;
 using Task = System.Threading.Tasks.Task;
 
@@ -18,6 +21,7 @@ namespace net.adamec.dev.vs.extension.radprojects
         //IDs
         public static readonly Guid CommandSet = new Guid("3994f851-c0ed-4950-8bc5-46fd1a52c1eb");
         public const int RadCmdApplyTemplateId = 0x0100;
+        public const int RadCmdSolutionConsoleId = 0x0101;
 
         //Internals
         private readonly RadProjectsExtensionPackage package;
@@ -58,6 +62,9 @@ namespace net.adamec.dev.vs.extension.radprojects
             var menuItem1 = new MenuCommand(ExecuteRadCmdApplyTemplate, new CommandID(CommandSet, RadCmdApplyTemplateId));
             commandService.AddCommand(menuItem1);
 
+            var menuItem2 = new MenuCommand(ExecuteRadCmdSolutionConsole, new CommandID(CommandSet, RadCmdSolutionConsoleId));
+            commandService.AddCommand(menuItem2);
+
             package.Output("Initialized commands");
         }
 
@@ -76,6 +83,19 @@ namespace net.adamec.dev.vs.extension.radprojects
             //Initialize TemplateEngine and call it's ApplyTemplate method
             var templateEngine = new TemplateEngine(package, settings, dte);
             templateEngine.ApplyTemplate();
+
+        }
+        /// <summary>
+        /// Solution console command (menu item) event handler
+        /// </summary>
+        /// <param name="sender">Sender raising the event</param>
+        /// <param name="e">Event arguments</param>
+        private void ExecuteRadCmdSolutionConsole(object sender, EventArgs e)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var solutionDir = Path.GetDirectoryName(dte.Solution.FullName);
+            var dlg = new ConsoleDialogWindow("cmd",runOnStartWorkingDir:solutionDir);
+            dlg.ShowModal();
 
         }
     }

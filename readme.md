@@ -65,6 +65,25 @@ The behavior is adjusted in template's `template.json` file
 
 The `template.json` file is kind of special. It needs to be placed in the root of the template to define the template's behavior. It's created at target solution as well and the `templateDir` field is added/updated there containing the reference (path) to the source root directory of the applied template. When the templated is to be re-applied (updated), the engine first checks for the `template.json` in the target solution dir and uses the reference to the template (template dir) from the "local" file. However the "local" `template.json` is overwritten each time the template is (re)applied to keep the up to date information. In case a new template (or when the template source has been moved) is to be applied to the target solution, it's necessary to remove the local `template.json`.
 
+## Solution Console ##
+Solution console is simple modal window with `cmd` console opened using the `Solution console` command available at `RAD Solution` submenu extending the VS context menu of the solution root.
+
+![Extension Menu](doc/img/ExtensionMenu.png)
+
+The console itself is custom implemented control trying to follow the main functionality of Windows command console. It's opened with standard `cmd` process running on background, so it can be used as regular command line. The console's working directory is set to solution root directory. Console can be closed using the button `Close` or sending the `exit` command.
+  
+![Solution Console.png](doc/img/SolutionConsole.png)
+
+Use:
+- Enter to send the current command
+- Escape to clear the current command 
+- Clipboard shortcuts to manage the clipboard. Ctrl-C is enabled even within the read only (output/history) area
+- Arrows to move the caret
+- Ctrl-Up and Ctrl-Down to use the command history
+
+*Note: The implementation of console is based on code from [https://github.com/dwmkerr/consolecontrol](https://github.com/dwmkerr/consolecontrol). Some parts have been redesigned/rewritten quite a lot as I could not make it working in WPF.* 
+
+
 ## VSIX Implementation Hints ##
 Some hints for VSIX implementation can be found within the source code
 

@@ -63,8 +63,16 @@
     <Compile Include="ui\ChooseTemplateDialogWindow.xaml.cs">
       <DependentUpon>ChooseTemplateDialogWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ui\console\ConsoleControl.xaml.cs">
+      <DependentUpon>ConsoleControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ui\console\ConsoleDialogWindow.xaml.cs">
+      <DependentUpon>ConsoleDialogWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="utils\EnumeratorExtensions.cs" />
     <Compile Include="utils\FileUtils.cs" />
+    <Compile Include="utils\ProcessWrapper.cs" />
+    <Compile Include="utils\RichTextBoxExtensions.cs" />
     <Compile Include="utils\SolutionInfo.cs" />
     <Compile Include="utils\StringExtensions.cs" />
   </ItemGroup>
@@ -195,6 +203,14 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="ui\ChooseTemplateDialogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\console\ConsoleControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ui\console\ConsoleDialogWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

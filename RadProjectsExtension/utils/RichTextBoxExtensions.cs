@@ -1,0 +1,58 @@
+﻿using System.Windows.Controls;
+using System.Windows.Documents;
+
+namespace net.adamec.dev.vs.extension.radprojects.utils
+{
+    public static class RichTextBoxExtensions
+    {
+        /// <summary>
+        /// Gets the position of the end of the content (offset from start)
+        /// </summary>
+        /// <param name="richTextBox">Rich text box to work with</param>
+        /// <returns>The position of the end of the content (offset from start)</returns>
+        public static int GetEndPosition(this RichTextBox richTextBox)
+        {
+            return richTextBox.Document.ContentStart.GetOffsetToPosition(richTextBox.Document.ContentEnd);
+        }
+
+        /// <summary>
+        /// Gets the current caret position (offset from start)
+        /// </summary>
+        /// <param name="richTextBox">Rich text box to work with</param>
+        /// <returns>The current caret position (offset from start)</returns>
+        public static int GetCaretPosition(this RichTextBox richTextBox)
+        {
+            return richTextBox.Document.ContentStart.GetOffsetToPosition(richTextBox.CaretPosition);
+        }
+
+        /// <summary>
+        /// Sets the caret to the end of the content
+        /// </summary>
+        /// <param name="richTextBox">Rich text box to work with</param>
+        public static void SetCaretToEnd(this RichTextBox richTextBox)
+        {
+            richTextBox.CaretPosition = richTextBox.GetEndPointer();
+        }
+
+        /// <summary>
+        /// Gets the pointer to the end of the content
+        /// </summary>
+        /// <param name="richTextBox">Rich text box to work with</param>
+        /// <returns>The pointer to the end of the content</returns>
+        public static TextPointer GetEndPointer(this RichTextBox richTextBox)
+        {
+            return richTextBox.Document.ContentEnd;
+        }
+
+        /// <summary>
+        ///  Gets the pointer to given <paramref name="position"/> (offset from start) within the content
+        /// </summary>
+        /// <param name="richTextBox">Rich text box to work with</param>
+        /// <param name="position">Offset from start</param>
+        /// <returns>The pointer at given position</returns>
+        public static TextPointer GetPointerAt(this RichTextBox richTextBox, int position)
+        {
+            return richTextBox.Document.ContentStart.GetPositionAtOffset(position);
+        }
+    }
+}
