@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
@@ -146,10 +147,10 @@ namespace net.adamec.dev.vs.extension.radprojects.template
 
                 templateInfo = templates.First();
                 if (templates.Count <= 1) return templateInfo;
-                
+
                 //select template
-                var dlg = new ChooseTemplateDialogWindow(Package,templates);
-                if (dlg.ShowModal() != true) return templateInfo;
+                var dlg = new ChooseTemplateDialogWindow(Package, templates) { Owner = Application.Current.MainWindow };
+                if (dlg.ShowMe(true) != true) return null;
 
                 templateInfo = dlg.SelectedTemplateInfo;
             }
@@ -363,10 +364,11 @@ namespace net.adamec.dev.vs.extension.radprojects.template
 
             var applicableProjects = new List<Project>();
 
-            foreach (var project in solutionInfo.ExistingProjects.Where(p=> {
+            foreach (var project in solutionInfo.ExistingProjects.Where(p =>
+            {
                 ThreadHelper.ThrowIfNotOnUIThread();
                 return !SolutionInfo.IsProjectSolutionItems(p) &&
-                       p.Name != "Miscellaneous Files" && p.Kind!= Constants.vsProjectItemsKindMisc;
+                       p.Name != "Miscellaneous Files" && p.Kind != Constants.vsProjectItemsKindMisc;
             }))
             {
                 var isInList = projects.Any(p =>
@@ -410,8 +412,8 @@ namespace net.adamec.dev.vs.extension.radprojects.template
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var retVal = new List<TemplateInfo>();
-            
-            var templatesPath = RadProjectsExtensionOptions.ApplyVariables(Options?.TemplatesDir?? RadProjectsExtensionOptions.DefaultTemplatesDir, Dte);
+
+            var templatesPath = RadProjectsExtensionOptions.ApplyVariables(Options?.TemplatesDir ?? RadProjectsExtensionOptions.DefaultTemplatesDir, Dte);
             Package.Output($"Checking templates in {templatesPath}...");
             var templatesDir = new DirectoryInfo(templatesPath);
             var templateDirs = templatesDir.GetDirectories().Where(di => File.Exists(di.FullName.AddPath(TemplateInfoFileName)));
@@ -425,7 +427,5 @@ namespace net.adamec.dev.vs.extension.radprojects.template
             Package.Output($"Found {retVal.Count} templates in {templatesPath}");
             return retVal;
         }
-
-
     }
 }

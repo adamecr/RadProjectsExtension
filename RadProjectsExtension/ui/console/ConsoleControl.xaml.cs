@@ -1,6 +1,7 @@
 ﻿using net.adamec.dev.vs.extension.radprojects.utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -23,6 +24,8 @@ namespace net.adamec.dev.vs.extension.radprojects.ui.console
         /// <summary>
         /// Brush for the diagnostics text
         /// </summary>
+        [Category("Brush")]
+        [Description("Brush for the diagnostics text")]
         public Brush DiagnosticsTextBrush
         {
             get => (Brush)GetValue(DiagnosticsTextColorProperty);
@@ -35,6 +38,8 @@ namespace net.adamec.dev.vs.extension.radprojects.ui.console
         /// <summary>
         /// Brush for the standard output text
         /// </summary>
+        [Category("Brush")]
+        [Description("Brush for the standard output text")]
         public Brush OutputTextBrush
         {
             get => (Brush)GetValue(OutputTextColorProperty);
@@ -47,6 +52,8 @@ namespace net.adamec.dev.vs.extension.radprojects.ui.console
         /// <summary>
         /// Brush for the error output text
         /// </summary>
+        [Category("Brush")]
+        [Description("Brush for the error output text")]
         public Brush ErrorTextBrush
         {
             get => (Brush)GetValue(ErrorTextColorProperty);
@@ -59,6 +66,8 @@ namespace net.adamec.dev.vs.extension.radprojects.ui.console
         /// <summary>
         /// Brush for the input text
         /// </summary>
+        [Category("Brush")]
+        [Description("Brush for the input text")]
         public Brush InputTextBrush
         {
             get => (Brush)GetValue(InputTextColorProperty);
@@ -72,6 +81,7 @@ namespace net.adamec.dev.vs.extension.radprojects.ui.console
         /// <summary>
         /// Flag whether to show diagnostics.
         /// </summary>
+        [Description("Flag whether to show diagnostics.")]
         public bool ShowDiagnostics
         {
             get => (bool)GetValue(ShowDiagnosticsProperty);
@@ -85,6 +95,8 @@ namespace net.adamec.dev.vs.extension.radprojects.ui.console
         /// <summary>
         /// Flag whether the user input is enabled.
         /// </summary>
+        [Category("Common")]
+        [Description("Flag whether the user input is enabled.")]
         public bool IsInputEnabled
         {
             get => (bool)GetValue(IsInputEnabledProperty);
@@ -99,6 +111,7 @@ namespace net.adamec.dev.vs.extension.radprojects.ui.console
         /// <summary>
         /// Flag whether there is a process running
         /// </summary>
+        [Description("Flag whether there is a process running")]
         public bool IsProcessRunning
         {
             get => (bool)GetValue(IsProcessRunningProperty);
@@ -121,7 +134,7 @@ namespace net.adamec.dev.vs.extension.radprojects.ui.console
         /// </summary>
         private string lastInput;
 
-        private List<string> commandBuffer = new List<string>();
+        private readonly List<string> commandBuffer = new List<string>();
         private int commandBufferIndex = -1;
 
         #region Events
@@ -171,7 +184,6 @@ namespace net.adamec.dev.vs.extension.radprojects.ui.console
 
         #endregion
 
-
         /// <summary>
         /// CTOR
         /// </summary>
@@ -184,7 +196,7 @@ namespace net.adamec.dev.vs.extension.radprojects.ui.console
 
             //Setup the console rich text box
             ContentRichTextBox.PreviewKeyDown += ConsoleKeyDownHandler;
-            ContentRichTextBox.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, InputTextBrush);
+            ContentRichTextBox.Foreground = InputTextBrush;
             DataObject.AddCopyingHandler(ContentRichTextBox, (s, e) =>
             {
                 if (e.IsDragDrop) e.CancelCommand();
@@ -265,7 +277,7 @@ namespace net.adamec.dev.vs.extension.radprojects.ui.console
             {
                 if (ShowDiagnostics)
                 {
-                    WriteOutput(Environment.NewLine + processWrapper.Command + " exited.", DiagnosticsTextBrush);
+                    WriteOutput($"{Environment.NewLine}{args.Content} exited with code {args.Code}", DiagnosticsTextBrush);
                 }
 
                 //Disable the console input
@@ -409,8 +421,10 @@ namespace net.adamec.dev.vs.extension.radprojects.ui.console
                 inputStartPos = ContentRichTextBox.GetCaretPosition();
 
                 //Switch to input color
+                ContentRichTextBox.Focus();
                 ContentRichTextBox.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, InputTextBrush);
                 var _ = new Run("", ContentRichTextBox.CaretPosition) { Foreground = InputTextBrush };
+                ContentRichTextBox.Foreground = InputTextBrush;
             });
         }
 

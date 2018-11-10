@@ -66,11 +66,11 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
         /// <summary>
         /// The standard output worker.
         /// </summary>
-        private readonly BackgroundWorker stdOutputWorker = new BackgroundWorker();
+        private readonly BackgroundWorkerWithSyncCancel stdOutputWorker = new BackgroundWorkerWithSyncCancel();
         /// <summary>
         /// The error output worker.
         /// </summary>
-        private readonly BackgroundWorker errorOutputWorker = new BackgroundWorker();
+        private readonly BackgroundWorkerWithSyncCancel errorOutputWorker = new BackgroundWorkerWithSyncCancel();
 
         /// <summary>
         /// Occurs when process output (incl. error stream) is produced.
@@ -112,7 +112,7 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
             Command = command;
             CommandArguments = arguments;
             WorkingDirectory = workingDirectory ?? Environment.CurrentDirectory;
-            
+
             //Configure the process
             var processStartInfo = new ProcessStartInfo(command, arguments)
             {
@@ -133,7 +133,7 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
             Process.Exited += ProcessExitedHandler;
             //Start the process
             Process.Start();
-            
+
             //Create readers and writers
             inputWriter = Process.StandardInput;
             outputReader = TextReader.Synchronized(Process.StandardOutput);
@@ -153,8 +153,10 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
             if (!IsProcessRunning) return;
 
             //Kill the process.
+
             Process.Kill();
-            Process.WaitForExit(1000);
+            stdOutputWorker.Cancel();
+            errorOutputWorker.Cancel();
         }
 
         /// <summary>
@@ -202,9 +204,9 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
         /// <param name="e">Event data</param>
         private void StdOutputWorkerDoWorkHandler(object sender, DoWorkEventArgs e)
         {
-            while (!stdOutputWorker.CancellationPending)
+            while (!stdOutputWorker.CancellationPending && !stdOutputWorker.IsCancelling)
             {
-                ProcessOutput(stdOutputWorker,outputReader, false);
+                ProcessOutput(stdOutputWorker, outputReader, false);
             }
         }
 
@@ -215,9 +217,9 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
         /// <param name="e">Event data</param>
         private void ErrorOutputWorkerDoWorkHandler(object sender, DoWorkEventArgs e)
         {
-            while (!errorOutputWorker.CancellationPending)
+            while (!errorOutputWorker.CancellationPending && !errorOutputWorker.IsCancelling)
             {
-                ProcessOutput(errorOutputWorker,errorReader, true);
+                ProcessOutput(errorOutputWorker, errorReader, true);
             }
         }
 
@@ -227,7 +229,7 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
         /// <param name="worker">Worker providing the output</param>
         /// <param name="reader">Standard output or error output stream reader to process </param>
         /// <param name="isError">Flag whether the output is to be marked as error</param>
-        private void ProcessOutput(BackgroundWorker worker,TextReader reader, bool isError)
+        private void ProcessOutput(BackgroundWorkerWithSyncCancel worker, TextReader reader, bool isError)
         {
             if (reader == null) return;
             int count;
@@ -238,7 +240,7 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
                 count = reader.Read(buffer, 0, 1024);
                 sb.Append(buffer, 0, count);
                 worker.ReportProgress(0, new OutputChunk(isError, sb.ToString()));
-            } while (count > 0);
+            } while (count > 0 && !worker.CancellationPending && !worker.IsCancelling);
             Thread.Sleep(OutputWorkerPeriodMs); //not to overload event recipients with a lot of events with small part of output
         }
 
@@ -259,18 +261,19 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
                 //just ignore - process has been probably killed
             }
 
-            //Raise process exited.
-            RaiseProcessExitEvent(exitCode);
-
             //Cleanup
-            stdOutputWorker.CancelAsync();
-            errorOutputWorker.CancelAsync();
+            var tmpCommand = Command;
+            stdOutputWorker.Cancel();
+            errorOutputWorker.Cancel();
             inputWriter = null;
             outputReader = null;
             errorReader = null;
             Process = null;
             Command = null;
             CommandArguments = null;
+
+            //Raise process exited.
+            RaiseProcessExitEvent(exitCode, tmpCommand);
         }
 
         /// <summary>
@@ -285,10 +288,11 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
         /// <summary>
         /// Raises OnProcessExit event
         /// </summary>
-        /// <param name="code">The code</param>
-        private void RaiseProcessExitEvent(int code)
+        /// <param name="code">The exit code</param>
+        /// <param name="command">Command name to be set to the args Content</param>
+        private void RaiseProcessExitEvent(int code, string command)
         {
-            OnProcessExit?.Invoke(this, new ProcessEventArgs(code));
+            OnProcessExit?.Invoke(this, new ProcessEventArgs(code, command));
         }
     }
 
@@ -337,9 +341,11 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
         /// CTOR with code
         /// </summary>
         /// <param name="code">Process exit code</param>
-        public ProcessEventArgs(int code)
+        /// <param name="command">Command name to be set to the args <see cref="Content"/></param>
+        public ProcessEventArgs(int code, string command)
         {
             Code = code;
+            Content = command;
         }
     }
 }

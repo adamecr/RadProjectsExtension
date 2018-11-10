@@ -17,6 +17,10 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
         /// </summary>
         public Solution Solution { get; }
         /// <summary>
+        /// Name of the solution
+        /// </summary>
+        public string SolutionName { get; private set; }
+        /// <summary>
         /// Solution directory
         /// </summary>
         public string SolutionDir { get; private set; }
@@ -57,6 +61,7 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             SolutionDir = Path.GetDirectoryName(Solution.FullName);
+            SolutionName = Path.GetFileNameWithoutExtension(Solution.FullName);
             if (string.IsNullOrEmpty(SolutionDir)) throw new Exception("Can't get the solution directory");
 
             ExistingProjects = GetSolutionProjects(Solution);

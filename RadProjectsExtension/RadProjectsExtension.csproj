@@ -51,6 +51,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="checklists\Checklist.cs" />
+    <Compile Include="checklists\ChecklistItem.cs" />
+    <Compile Include="checklists\ChecklistItemEnums.cs" />
+    <Compile Include="checklists\Checklists.cs" />
+    <Compile Include="git\GitChangeTypeEnum.cs" />
+    <Compile Include="git\GitPorcelainFileItemInfo.cs" />
+    <Compile Include="git\GitPorcelainInfo.cs" />
+    <Compile Include="git\GitPorcelainParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RadProjectsExtensionCommands.cs" />
     <Compile Include="RadProjectsExtensionOptions.cs">
@@ -60,6 +68,9 @@
     <Compile Include="template\TemplateEngine.cs" />
     <Compile Include="template\TemplateInfo.cs" />
     <Compile Include="ui\BaseDialogWindow.cs" />
+    <Compile Include="ui\checklists\ChecklistsDialogWindow.xaml.cs">
+      <DependentUpon>ChecklistsDialogWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ui\ChooseTemplateDialogWindow.xaml.cs">
       <DependentUpon>ChooseTemplateDialogWindow.xaml</DependentUpon>
     </Compile>
@@ -69,22 +80,61 @@
     <Compile Include="ui\console\ConsoleDialogWindow.xaml.cs">
       <DependentUpon>ConsoleDialogWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ui\ResourceImageIds.cs" />
+    <Compile Include="ui\ResourceMonikers.cs" />
+    <Compile Include="ui\updown\IntegerUpDown.cs" />
+    <Compile Include="ui\version\VersionDialogWindow.xaml.cs">
+      <DependentUpon>VersionDialogWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="utils\BackgroundWorkerWithSyncCancel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="utils\EnumeratorExtensions.cs" />
     <Compile Include="utils\FileUtils.cs" />
+    <Compile Include="utils\ProcessUtils.cs" />
     <Compile Include="utils\ProcessWrapper.cs" />
     <Compile Include="utils\RichTextBoxExtensions.cs" />
     <Compile Include="utils\SolutionInfo.cs" />
     <Compile Include="utils\StringExtensions.cs" />
+    <Compile Include="version\VersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Key.snk" />
+    <Content Include="RadProjectsExtension.imagemanifest">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Refresh.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Reset.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ResultNok.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ResultOk.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Run.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Running.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Skip.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Skipped.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <VSCTCompile Include="RadProjectsExtensionPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
     </VSCTCompile>
     <Content Include="license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -94,6 +144,30 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Resource Include="Resources\Active.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ClearConsole.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Detail.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Evaluate.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\FinishedNok.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\FinishedOk.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Manual.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Pending.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Resources\RadProjectsExtensionPackage.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -199,9 +273,14 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="ui\checklists\ChecklistsDialogWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="ui\ChooseTemplateDialogWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -214,9 +293,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ui\IntegerUpDownResourceDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="ui\StyleResourceDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ui\version\VersionDialogWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

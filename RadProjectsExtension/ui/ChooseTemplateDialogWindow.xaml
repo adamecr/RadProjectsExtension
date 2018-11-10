@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="800"
              Width="800" Height="200"
-             ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None"  Background="{DynamicResource WindowBackground}" WindowStartupLocation="CenterOwner">
+             ResizeMode="NoResize" ShowInTaskbar="True" WindowStyle="ToolWindow" Title="Apply template" Background="{DynamicResource WindowBackground}" WindowStartupLocation="CenterOwner">
     <local:BaseDialogWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

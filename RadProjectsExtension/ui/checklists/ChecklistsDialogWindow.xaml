@@ -1,0 +1,422 @@
+﻿<ui:BaseDialogWindow
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+        xmlns:ui="clr-namespace:net.adamec.dev.vs.extension.radprojects.ui"
+        xmlns:console="clr-namespace:net.adamec.dev.vs.extension.radprojects.ui.console"
+        xmlns:checklists="clr-namespace:net.adamec.dev.vs.extension.radprojects.checklists" 
+        x:Class="net.adamec.dev.vs.extension.radprojects.ui.checklists.ChecklistsDialogWindow"
+        mc:Ignorable="d"
+        Height="800" Width="1024" WindowStyle="ToolWindow" 
+        Background="{DynamicResource WindowBackground}" WindowStartupLocation="CenterOwner" Title="Check lists">
+    <ui:BaseDialogWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../StyleResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </ui:BaseDialogWindow.Resources>
+    <ui:BaseDialogWindow.DataContext>
+        <checklists:Checklists/>
+    </ui:BaseDialogWindow.DataContext>
+    <Grid Style="{DynamicResource MainGrid}" Name="MainGrid" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Style="{DynamicResource MainStackPanel}" Name="HeaderWithChecklistsCombo" >
+            <ComboBox ItemsSource="{Binding Items}" SelectedItem="{Binding Current, Mode=TwoWay}" />
+        </StackPanel>
+        <Grid Grid.Row="1" Name="ContentGrid" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <DockPanel LastChildFill="True" Name="ContentLeftDock">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="2" Name="ChecklistHeaderStack">
+                    <TextBlock Text="Checklist: " FontWeight="Bold" ></TextBlock>
+                    <TextBlock Text="{Binding Current.Name}" ></TextBlock>
+                </StackPanel>
+                <ListBox HorizontalContentAlignment="Stretch"  ScrollViewer.VerticalScrollBarVisibility="Auto" Name="ChecklistItemsList"
+                         ItemsSource="{Binding Current.Items}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="5,0" >
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="LightGray" BorderThickness="1" Margin="2,2">
+                                <Grid Margin="2,2" Name="ChecklistItemsListItemMainGrid">
+                                    <Grid.Resources>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Margin" Value="3,2" />
+                                            <Style.Triggers>
+                                                <!-- Hide Command and Command Args for manual items -->
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding ItemType}" Value="Manual" />
+                                                        <Condition Binding="{Binding Path=(Grid.Row), RelativeSource={RelativeSource Self}}" Value="2"/>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <MultiDataTrigger.Setters>
+                                                        <Setter Property="Height" Value="0"/>
+                                                    </MultiDataTrigger.Setters>
+                                                </MultiDataTrigger>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding ItemType}" Value="Manual" />
+                                                        <Condition Binding="{Binding Path=(Grid.Row), RelativeSource={RelativeSource Self}}" Value="3"/>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <MultiDataTrigger.Setters>
+                                                        <Setter Property="Height" Value="0"/>
+                                                    </MultiDataTrigger.Setters>
+                                                </MultiDataTrigger>
+                                                <!-- Hide Command Args if not set-->
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding CommandArgs}" Value="{x:Null}" />
+                                                        <Condition Binding="{Binding Path=(Grid.Row), RelativeSource={RelativeSource Self}}" Value="3"/>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <MultiDataTrigger.Setters>
+                                                        <Setter Property="Height" Value="0"/>
+                                                    </MultiDataTrigger.Setters>
+                                                </MultiDataTrigger>
+                                                <!-- Hide Description if not set-->
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding Description}" Value="{x:Null}" />
+                                                        <Condition Binding="{Binding Path=(Grid.Row), RelativeSource={RelativeSource Self}}" Value="1"/>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <MultiDataTrigger.Setters>
+                                                        <Setter Property="Height" Value="0"/>
+                                                    </MultiDataTrigger.Setters>
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Resources>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="35" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Name" Foreground="{StaticResource DisabledText}" />
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Name}" TextWrapping="Wrap" />
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Description" Foreground="{StaticResource DisabledText}" />
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}" TextWrapping="Wrap" />
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Command" Foreground="{StaticResource DisabledText}" />
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Command}"  TextWrapping="Wrap"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Cmd Args" Foreground="{StaticResource DisabledText}" />
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CommandArgs}"  TextWrapping="Wrap"/>
+                                    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Name="ChecklistItemsListItemBottomIconsStack">
+                                        <Button Height="32" Width="32" Cursor="Hand" Name="BttnRun" Click="BttnRun_OnClick" Content="{Binding Mode=OneWay}" ToolTip="Execute">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Status}" Value="Active">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                            <Button.Template>
+                                                <ControlTemplate>
+                                                    <imaging:CrispImage Width="32" Height="32" Moniker="{x:Static ui:ResourceMonikers.Run}" />
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                        <Button Height="32" Width="32" Cursor="Hand" Name="BttnSkip" Click="BttnSkip_OnClick" Content="{Binding Mode=OneWay}" ToolTip="Skip">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Status}" Value="Active">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                            <Button.Template>
+                                                <ControlTemplate>
+                                                    <imaging:CrispImage Width="32" Height="32" Moniker="{x:Static ui:ResourceMonikers.Skip}" />
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                        <Button Height="32" Width="32" Cursor="Hand" Name="BttnEvaluateOk" Click="BttnEvaluateOk_OnClick" Content="{Binding Mode=OneWay}" ToolTip="Evaluate OK">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Status}" Value="Evaluate">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                            <Button.Template>
+                                                <ControlTemplate>
+                                                    <imaging:CrispImage Width="32" Height="32" Moniker="{x:Static ui:ResourceMonikers.ResultOk}" />
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                        <Button Height="32" Width="32" Cursor="Hand" Name="BttnEvaluateNok" Click="BttnEvaluateNok_OnClick" Content="{Binding Mode=OneWay}" ToolTip="Evaluate NOK">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Status}" Value="Evaluate">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                            <Button.Template>
+                                                <ControlTemplate>
+                                                    <imaging:CrispImage Width="32" Height="32" Moniker="{x:Static ui:ResourceMonikers.ResultNok}" />
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="0" Grid.Column="2" Grid.RowSpan="5" Name="ChecklistItemsListItemRightIconsStack" >
+                                        <StackPanel ToolTip="{Binding Status}" Name="ChecklistItemsListItemRightIconsStatusStack">
+                                            <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static ui:ResourceMonikers.Pending}" >
+                                                <imaging:CrispImage.Style>
+                                                    <Style TargetType="{x:Type imaging:CrispImage}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Pending">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </imaging:CrispImage.Style>
+                                            </imaging:CrispImage>
+                                            <imaging:CrispImage Width="32" Height="32" Moniker="{x:Static ui:ResourceMonikers.Active}" >
+                                                <imaging:CrispImage.Style>
+                                                    <Style TargetType="{x:Type imaging:CrispImage}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Active">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </imaging:CrispImage.Style>
+                                            </imaging:CrispImage>
+                                            <imaging:CrispImage Width="32" Height="32" Moniker="{x:Static ui:ResourceMonikers.Running}" >
+                                                <imaging:CrispImage.Style>
+                                                    <Style TargetType="{x:Type imaging:CrispImage}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Running">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </imaging:CrispImage.Style>
+                                            </imaging:CrispImage>
+                                            <imaging:CrispImage Width="32" Height="32" Moniker="{x:Static ui:ResourceMonikers.Evaluate}" >
+                                                <imaging:CrispImage.Style>
+                                                    <Style TargetType="{x:Type imaging:CrispImage}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Evaluate">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </imaging:CrispImage.Style>
+                                            </imaging:CrispImage>
+                                            <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static ui:ResourceMonikers.FinishedOk}" >
+                                                <imaging:CrispImage.Style>
+                                                    <Style TargetType="{x:Type imaging:CrispImage}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="FinishedOk">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </imaging:CrispImage.Style>
+                                            </imaging:CrispImage>
+                                            <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static ui:ResourceMonikers.FinishedNok}" >
+                                                <imaging:CrispImage.Style>
+                                                    <Style TargetType="{x:Type imaging:CrispImage}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="FinishedNok">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </imaging:CrispImage.Style>
+                                            </imaging:CrispImage>
+                                            <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static ui:ResourceMonikers.Skipped}" >
+                                                <imaging:CrispImage.Style>
+                                                    <Style TargetType="{x:Type imaging:CrispImage}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Skipped">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </imaging:CrispImage.Style>
+                                            </imaging:CrispImage>
+                                        </StackPanel>
+                                        <StackPanel Name="ChecklistItemsListItemRightIconsManualStack">
+                                            <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static ui:ResourceMonikers.Manual}" >
+                                                <imaging:CrispImage.Style>
+                                                    <Style TargetType="{x:Type imaging:CrispImage}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ItemType}" Value="Manual">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </imaging:CrispImage.Style>
+                                            </imaging:CrispImage>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"  Name="ContentVertSplitter" />
+            <Grid Grid.Column="2" Name="ContentRightGrid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <DockPanel Grid.Row="0" LastChildFill="True" Name="ContentRightTopDock" Margin="5">
+                    <Grid DockPanel.Dock="Top" Name="ContentRightTopHeaderGrid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,10,5">
+                            <TextBlock Name="TbSolutionName" FontWeight="Bold" >Solution Name</TextBlock>
+                            <TextBlock Name="TbPath" FontSize="12" TextTrimming="CharacterEllipsis" Visibility="Collapsed"></TextBlock>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Margin="0,4,0,0" >Version</TextBlock>
+                                <TextBox Margin="3,3,3,5" IsEnabled="False" Name="TbVersionMajor" />
+                                <TextBlock Margin="0,4,0,0" >.</TextBlock>
+                                <TextBox Margin="3,3,3,5" IsEnabled="False" Name="TbVersionMinor"/>
+                                <TextBlock Margin="0,4,0,0" >.</TextBlock>
+                                <TextBox Margin="3,3,3,5" IsEnabled="False" Name="TbVersionPatch"/>
+                                <TextBlock Margin="0,4,0,0" >.</TextBlock>
+                                <TextBox Margin="3,3,3,5" IsEnabled="False" Name="TbVersionBuild"/>
+                                <Button  Cursor="Hand" Name="BttnVersionDetail" Click="BttnVersionDetail_OnClick" ToolTip="Version detail">
+                                    <Button.Template>
+                                        <ControlTemplate>
+                                            <imaging:CrispImage Width="20" Height="20" Moniker="{x:Static ui:ResourceMonikers.Detail}" />
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Style="{StaticResource ButtonsStackPanel}" Name="ContentRightTopHeaderIconsStack">
+                            <Button Height="32" Width="32" Cursor="Hand" Name="BttnStartChecklist" Click="BttnStartChecklist_OnClick"  Content="{Binding Mode=OneWay}" ToolTip="Start checklist">
+                                <Button.Style>
+                                    <Style TargetType="{x:Type Button}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Current.IsInProgress, Mode=OneWay}" Value="false">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <Button.Template>
+                                    <ControlTemplate>
+                                        <imaging:CrispImage Width="32" Height="32" Moniker="{x:Static ui:ResourceMonikers.Run}" />
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button Height="32" Width="32" Cursor="Hand" Name="BttnResetChecklist" Click="BttnResetChecklist_OnClick" Content="{Binding Mode=OneWay}" ToolTip="Reset checklist">
+                                <Button.Style>
+                                    <Style TargetType="{x:Type Button}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Current.IsInProgress}" Value="true">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <Button.Template>
+                                    <ControlTemplate>
+                                        <imaging:CrispImage Width="32" Height="32" Moniker="{x:Static ui:ResourceMonikers.Reset}" />
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button Height="32" Width="32" Cursor="Hand" Name="BttnRefreshInfo" Click="BttnRefreshInfo_OnClick"  ToolTip="Refresh info">
+                                <Button.Template>
+                                    <ControlTemplate>
+                                        <imaging:CrispImage Width="32" Height="32" Moniker="{x:Static ui:ResourceMonikers.Refresh}" />
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button Height="32" Width="32" Cursor="Hand" Name="BttnClearConsole" Click="BttnClearConsole_OnClick"  ToolTip="Clear console">
+                                <Button.Template>
+                                    <ControlTemplate>
+                                        <imaging:CrispImage Width="32" Height="32" Moniker="{x:Static ui:ResourceMonikers.ClearConsole}" />
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="3*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="2*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="1" Name="InfoGitOverview" />
+                        <Border Grid.Row="2" BorderBrush="LightGray" BorderThickness="1" Margin="2" Padding="3" >
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <TextBlock Name="InfoGitFiles" TextWrapping="WrapWithOverflow" FontFamily="Consolas" FontSize="12"></TextBlock>
+                            </ScrollViewer>
+                        </Border>
+                        <TextBlock Grid.Row="3" >Branches:</TextBlock>
+                        <Border Grid.Row="4" BorderBrush="LightGray" BorderThickness="1" Margin="2" Padding="3" >
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <TextBlock Name="InfoGitBranches" TextWrapping="WrapWithOverflow" FontFamily="Consolas" FontSize="12"></TextBlock>
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+                </DockPanel>
+                <GridSplitter Grid.Row="1"  Height="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Name="ContentRightHorzSplitter" />
+                <DockPanel  Grid.Row="2" LastChildFill="True" Name="ContentRightBottomDock">
+                    <Grid Name="ConsoleHolderGrid">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <console:ConsoleControl x:Name="Console" Grid.Row="1" ShowDiagnostics="True"  />
+                    </Grid>
+                </DockPanel>
+            </Grid>
+        </Grid>
+        <StackPanel Grid.Row="2" Style="{StaticResource ButtonsStackPanel}" Name="FooterWithDlgButtons">
+            <Button Content="Close" IsCancel="True" x:Name="BttnCancel" Click="BttnCancel_OnClick" />
+        </StackPanel>
+    </Grid>
+</ui:BaseDialogWindow>

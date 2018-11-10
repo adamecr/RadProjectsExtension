@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel.Design;
 using System.IO;
-using EnvDTE;
+using System.Windows;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using net.adamec.dev.vs.extension.radprojects.template;
+using net.adamec.dev.vs.extension.radprojects.ui.checklists;
 using net.adamec.dev.vs.extension.radprojects.ui.console;
+using net.adamec.dev.vs.extension.radprojects.ui.version;
 using net.adamec.dev.vs.extension.radprojects.utils;
 using Task = System.Threading.Tasks.Task;
 
@@ -22,6 +24,8 @@ namespace net.adamec.dev.vs.extension.radprojects
         public static readonly Guid CommandSet = new Guid("3994f851-c0ed-4950-8bc5-46fd1a52c1eb");
         public const int RadCmdApplyTemplateId = 0x0100;
         public const int RadCmdSolutionConsoleId = 0x0101;
+        public const int RadCmdChecklistsId = 0x0102;
+        public const int RadCmdVersionId = 0x0103;
 
         //Internals
         private readonly RadProjectsExtensionPackage package;
@@ -38,7 +42,7 @@ namespace net.adamec.dev.vs.extension.radprojects
             // Switch to the main thread - the call to AddCommand in RadSolutionCommand's constructor requires
             // the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
-            
+
             var commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             var dteService = await package.GetServiceAsync(typeof(EnvDTE.DTE)) as DTE2;
             Instance = new RadProjectsExtensionCommands(package, commandService, dteService);
@@ -64,6 +68,12 @@ namespace net.adamec.dev.vs.extension.radprojects
 
             var menuItem2 = new MenuCommand(ExecuteRadCmdSolutionConsole, new CommandID(CommandSet, RadCmdSolutionConsoleId));
             commandService.AddCommand(menuItem2);
+
+            var menuItem3 = new MenuCommand(ExecuteRadCmdChecklists, new CommandID(CommandSet, RadCmdChecklistsId));
+            commandService.AddCommand(menuItem3);
+
+            var menuItem4 = new MenuCommand(ExecuteRadCmdVersion, new CommandID(CommandSet, RadCmdVersionId));
+            commandService.AddCommand(menuItem4);
 
             package.Output("Initialized commands");
         }
@@ -94,8 +104,40 @@ namespace net.adamec.dev.vs.extension.radprojects
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var solutionDir = Path.GetDirectoryName(dte.Solution.FullName);
-            var dlg = new ConsoleDialogWindow("cmd",runOnStartWorkingDir:solutionDir);
-            dlg.ShowModal();
+            var dlg = new ConsoleDialogWindow("cmd", runOnStartWorkingDir: solutionDir)
+            {
+                Owner = Application.Current.MainWindow
+            };
+            dlg.ShowMe(true);
+
+        }
+
+        /// <summary>
+        /// Checklists command (menu item) event handler
+        /// </summary>
+        /// <param name="sender">Sender raising the event</param>
+        /// <param name="e">Event arguments</param>
+        private void ExecuteRadCmdChecklists(object sender, EventArgs e)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var dlg = new ChecklistsDialogWindow(new SolutionInfo(dte.Solution))
+            {
+                Owner = Application.Current.MainWindow
+            };
+            dlg.ShowMe(true);
+
+        }
+
+        /// <summary>
+        /// Version info command (menu item) event handler
+        /// </summary>
+        /// <param name="sender">Sender raising the event</param>
+        /// <param name="e">Event arguments</param>
+        private void ExecuteRadCmdVersion(object sender, EventArgs e)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var dlg = new VersionDialogWindow(new SolutionInfo(dte.Solution)) { Owner = Application.Current.MainWindow };
+            dlg.ShowMe(true);
 
         }
     }
