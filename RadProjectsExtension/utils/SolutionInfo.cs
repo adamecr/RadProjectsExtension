@@ -79,7 +79,7 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
             return ExistingProjects.FirstOrDefault(p =>
             {
                 ThreadHelper.ThrowIfNotOnUIThread();
-                return new FileInfo(p.FileName).Name == projectFileName;
+                return (!string.IsNullOrEmpty(p.FileName) && new FileInfo(p.FileName).Name == projectFileName);
             }) != null;
         }
 

@@ -68,8 +68,8 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
             }
             else
             {
-                var fileName = Path.GetFileName(destFileName).ToLower();
-                if (doNotOverwriteFileNames == null || !doNotOverwriteFileNames.Exists(f => f.ToLower().EndsWith(fileName)))
+                var fileName = Path.GetFileName(destFileName);
+                if (doNotOverwriteFileNames == null || !doNotOverwriteFileNames.Exists(f => string.Equals(f, fileName, StringComparison.CurrentCultureIgnoreCase)))
                 {
                     File.Copy(sourceFileName, destFileName, true);
                 }

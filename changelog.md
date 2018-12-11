@@ -3,9 +3,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased ##
  
 ## Known Issues ##
 - Solution console: The color of the input text is not sometimes working properly
+
+## [1.2.1] - 2018-12-11 ##
+
+### Fixed ###
+ - FileUtils (used in Apply Template) - don't overwrite files now compares exactly the file name and is case insensitive
+ - FileUtils (used in Apply Template) - keeps the case of file names during copy from template
+ - Fixed the crash when a template was applied to solution with solution items virtual project (crashed)
+ 
 
 ## [1.2.0] - 2018-11-10 ##
 ### Added ###
@@ -33,7 +42,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Initial release
 - Solution (Project) Templates functionality
 
-[1.2.0]: https://github.com/adamecr/RadProjectsExtension/compare/v1.1.0...v1.1.2
+[1.2.1]: https://github.com/adamecr/RadProjectsExtension/compare/v1.2.0...v1.2.1
+[1.2.0]: https://github.com/adamecr/RadProjectsExtension/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/adamecr/RadProjectsExtension/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/adamecr/RadProjectsExtension/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/adamecr/RadProjectsExtension/releases/tag/v1.0.0

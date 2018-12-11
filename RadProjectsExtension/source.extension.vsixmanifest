@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="RadProjectsExtension.396b99e3-35af-4dc6-8e72-2cd8d2681e92" Version="1.2.0" Language="en-US" Publisher="Radek Adamec" />
+        <Identity Id="RadProjectsExtension.396b99e3-35af-4dc6-8e72-2cd8d2681e92" Version="1.2.1" Language="en-US" Publisher="Radek Adamec" />
         <DisplayName>RadProjectsExtension</DisplayName>
         <Description xml:space="preserve">Visual Studio 2017 extension helper for RAD projects.
 Currently supports just extending the solutions by templates (in reality used to add build support projects and adjust the build dependencies)</Description>
