@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## Known Issues ##
 - Solution console: The color of the input text is not sometimes working properly
 
+## [1.2.2] - 2018-12-29 ##
+
+### Fixed ###
+- Do not ovewrite file names applied to subfolders as well
+
+
 ## [1.2.1] - 2018-12-11 ##
 
 ### Fixed ###
@@ -42,6 +48,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Initial release
 - Solution (Project) Templates functionality
 
+[1.2.2]: https://github.com/adamecr/RadProjectsExtension/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/adamecr/RadProjectsExtension/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/adamecr/RadProjectsExtension/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/adamecr/RadProjectsExtension/compare/v1.0.1...v1.1.0

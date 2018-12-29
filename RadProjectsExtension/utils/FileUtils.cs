@@ -43,7 +43,7 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
             //copy  sub directories 
             foreach (var subDir in di.GetDirectories())
             {
-                DirectoryCopy(subDir.FullName, destDirectoryName.AddPath(subDir.Name), true,overwrite);
+                DirectoryCopy(subDir.FullName, destDirectoryName.AddPath(subDir.Name), true,overwrite,doNotOverwriteFileNames);
             }
 
         }
@@ -61,7 +61,6 @@ namespace net.adamec.dev.vs.extension.radprojects.utils
         {
             if (sourceFileName == null) throw new ArgumentNullException(nameof(sourceFileName));
             if (destFileName==null) throw new ArgumentNullException(nameof(destFileName));
-
             if (!overwrite || !File.Exists(destFileName))
             {
                 File.Copy(sourceFileName,destFileName,false);
